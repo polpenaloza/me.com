@@ -7,6 +7,11 @@ interface iNavBar {
 export const NavBar = ({ urls }: iNavBar) => {
   return (
     <nav className='w-full'>
+      <h1 className='text-3xl p-5'>
+        <Link passHref href='/'>
+          Pol Penaloza
+        </Link>
+      </h1>
       {urls.map(({ url, label }) => {
         return (
           <div className='text-xl font-bold underline'>

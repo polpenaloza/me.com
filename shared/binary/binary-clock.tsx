@@ -1,47 +1,5 @@
 import { memo, useEffect, useState } from 'react'
 
-const Pip = ({ isOn }) => <div className={`pip ${isOn && 'pip--on'}`}></div>
-
-const BinaryDigit = ({ base2NumberAsArray }) => (
-  <div className='binary-digit' key={base2NumberAsArray.toString()}>
-    {base2NumberAsArray.map((pip, idx) => (
-      <Pip key={idx} isOn={pip === 1} />
-    ))}
-  </div>
-)
-
-const BinaryDigitGroup = ({ group }) => (
-  <div className='binary-digit-group' key={group}>
-    {group.map((binaryDigit, idx) => (
-      <BinaryDigit base2NumberAsArray={binaryDigit} key={idx} />
-    ))}
-  </div>
-)
-
-const Clock = () => {
-  const [digits, setDigits] = useState([[], [], []])
-
-  useEffect(() => {
-    setInterval(function () {
-      const date = new Date()
-      const newDigits = [
-        numberAsBinaryArrayPair(date.getHours()),
-        numberAsBinaryArrayPair(date.getMinutes()),
-        numberAsBinaryArrayPair(date.getSeconds()),
-      ]
-      setDigits(newDigits)
-    }, 1000)
-  }, [])
-
-  return (
-    <>
-      {digits.map((digit) => (
-        <BinaryDigitGroup group={digit} />
-      ))}
-    </>
-  )
-}
-
 function numberToBinary(base10Number) {
   const base2Values = [8, 4, 2, 1]
   let output = [0, 0, 0, 0]
@@ -71,6 +29,55 @@ function numberAsBinaryArrayPair(number) {
   }
 
   return pair
+}
+
+const Pip = ({ isOn, id }) => (
+  <div key={`pip-${id}`} className={`pip ${isOn && 'pip--on'}`}></div>
+)
+
+const BinaryDigit = ({ base2NumberAsArray, id }) => (
+  <div className='binary-digit' key={`binary-digit-${id}`}>
+    {base2NumberAsArray.map((pip, idx) => (
+      <Pip id={`${id}-${idx}`} isOn={pip === 1} />
+    ))}
+  </div>
+)
+
+const BinaryDigitGroup = ({ group, id }) => (
+  <div className='binary-digit-group' key={`binary-digit-group-${id}`}>
+    {group.map((binaryDigit, idx) => (
+      <BinaryDigit base2NumberAsArray={binaryDigit} id={`${id}-${idx}`} />
+    ))}
+  </div>
+)
+
+const Clock = () => {
+  const [digits, setDigits] = useState([[], [], []])
+
+  const updateDigits = () => {
+    const date = new Date()
+    const newDigits = [
+      numberAsBinaryArrayPair(date.getHours()),
+      numberAsBinaryArrayPair(date.getMinutes()),
+      numberAsBinaryArrayPair(date.getSeconds()),
+    ]
+    setDigits(newDigits)
+  }
+
+  useEffect(() => {
+    updateDigits()
+    setInterval(() => {
+      updateDigits()
+    }, 1000)
+  }, [])
+
+  return (
+    <>
+      {digits.map((digit, idx) => (
+        <BinaryDigitGroup group={digit} id={`digit-${idx}`} />
+      ))}
+    </>
+  )
 }
 
 export default memo(Clock)
